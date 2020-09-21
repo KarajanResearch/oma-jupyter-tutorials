@@ -45,7 +45,6 @@ class ApiObject:
         self.params[self.objectName] = self.id
         url = self.oma_login.endpoint + self.oma_login.config["api_path"] + self.objectName
         response = requests.post(url, headers=self.oma_login.headers, data=self.params, verify=self.oma_login.verify_certificate)
-        # print(response.content.decode())
         try:
             content = json.loads(response.content.decode())
         except:
@@ -72,10 +71,8 @@ class AnnotationSession(ApiObject):
         bar_tempos = np.zeros(len(annotations))
 
         for current_annotation in range(len(annotations) - 1):
-            #print("looping", current_annotation)
             annotation = annotations[current_annotation]
             # only take whole bars for now
-            #print(annotation)
             if annotation["beatNumber"] != 1:
                 continue
 
@@ -83,15 +80,15 @@ class AnnotationSession(ApiObject):
             current_bar_start = annotation["momentOfPerception"]
             next_bar_start = annotations[current_annotation + 1]["momentOfPerception"]
             duration = next_bar_start - current_bar_start
-            # write back result
-            # bar_durations[index] = duration
+
             if duration > 0:
                 bar_tempos[index] = 1 / duration # or some other metric
             else:
                 bar_tempos[index] = None
-
             index = index + 1
+
         return (bar_numbers[0:index], bar_tempos[0:index])
+
 
 
 class Recording(ApiObject):
@@ -112,8 +109,6 @@ class Recording(ApiObject):
         sessions.get()
 
         return sessions.dictionary()
-
-
 
 
 
